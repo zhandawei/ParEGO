@@ -1,11 +1,11 @@
-% 1. The ParEGO algorithm decomposes a multiobjective problem into multiple
+% 1. The ParEGO algorithm[1] decomposes a multiobjective problem into multiple
 %     single-objective problems and solves one sinlge-objective problem
 %     randomly in each iteration. 
 % 2. The dace toolbox [2] is used for building the Kriging models in the
 %    implementations.
 % 3. The non-dominated sorting method by Yi Cao [3] is used to identify the
 %    non-dominated fronts from all the design points
-% 5. The EIM criteria are maximized by DE [5] algorithm.
+% 4. The EI criteria are maximized by DE [4] algorithm.
 % [1]  Knowles, J. ParEGO: A hybrid algorithm with on-line landscape 
 %      approximation for expensive multiobjective optimization problems.
 %     IEEE Transactions on Evolutionary Computation, 2006,10(1):50-66.
@@ -18,9 +18,15 @@
 % [4] N. Beume, C.M. Fonseca, M. Lopez-Ibanez, L. Paquete, J. Vahrenhold,
 %     On the Complexity of Computing the Hypervolume Indicator, IEEE
 %     Transactions on Evolutionary Computation,2009,13(5):1075-1082.
+%--------------------------------------------------------------------------
 % zhandawei@swjtu{dot}edu{dot}cn
 % 2019.09.18 initial creation
-% -----------------------------------------------------------------------------------------
+%--------------------------------------------------------------------------
+% This program is free software; you can redistribute it and/or
+% modify it. This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+%--------------------------------------------------------------------------
 clearvars;close all;
 % settings of the problem
 % for ZDT test problems, the number of objectives should be 2
@@ -83,8 +89,8 @@ while evaluation < max_evaluation
     % build (re-build) the initial Kriging models
     kriging_obj = dacefit(sample_x,sample_y_pcheby,'regpoly0','corrgauss',1*ones(1,num_vari),0.001*ones(1,num_vari),1000*ones(1,num_vari));
     infill_criterion = @(x)Infill_EI(x, kriging_obj, min(sample_y_pcheby));
-    % a genetic algorithm is used for the maximization problem
-    [best_x,best_EI] = Optimizer_GA(infill_criterion, num_vari, design_space(1,:), design_space(2,:), 100, 100);
+    %  DE is used for the maximization problem
+    [best_x,best_EI] = DE(infill_criterion, num_vari, design_space(1,:), design_space(2,:), 100, 100);
     % do the expensive evaluations
     best_y = feval(fun_name, best_x, num_obj);
     evaluation = evaluation + size(best_y,1);
