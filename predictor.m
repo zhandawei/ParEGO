@@ -46,7 +46,7 @@ y = dmodel.Ysc(1,:) + dmodel.Ysc(2,:) * sy;
 %----------------------------mean square error
 rt = dmodel.C \ r;
 u = dmodel.G \ (dmodel.Ft.' * rt - f.');
-mse = dmodel.sigma2 .* (1 + u.^2 - sum(rt.^2,1))';
+mse = dmodel.sigma2 .* (1 + sum(u.^2,1)- sum(rt.^2,1))';
 
 
 
